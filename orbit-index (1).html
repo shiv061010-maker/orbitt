@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORBITT — Practice the conversations that shape your career</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5F0E6;
+  --cream-2: #EDE5D4;
+  --ink: #2C2A24;
+  --ink-soft: #6B665A;
+  --accent: #8B7355;
+  --line: rgba(44,42,36,0.12);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--cream);
+  font-family: var(--font-sans);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.orbit-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--cream);
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+.orbit-thin { font-weight: 300; letter-spacing: -0.02em; }
+
+.orbit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  border: 0.5px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(.2,.7,.2,1);
+  color: var(--ink);
+  text-decoration: none;
+}
+.orbit-btn:hover {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+.orbit-btn-solid {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+.orbit-btn-solid:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+.orbit-nav a {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.75;
+  transition: opacity 0.3s;
+}
+.orbit-nav a:hover { opacity: 1; }
+
+.orbit-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 0.5px solid var(--line);
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: rgba(255,255,255,0.4);
+}
+
+.orbit-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7FA670;
+  animation: orbitPulse 2s ease-in-out infinite;
+}
+
+@keyframes orbitPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+@keyframes orbitFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.orbit-anim-1 { animation: orbitFadeUp 0.8s 0.1s both cubic-bezier(.2,.7,.2,1); }
+.orbit-anim-2 { animation: orbitFadeUp 0.8s 0.25s both cubic-bezier(.2,.7,.2,1); }
+.orbit-anim-3 { animation: orbitFadeUp 0.8s 0.4s both cubic-bezier(.2,.7,.2,1); }
+.orbit-anim-4 { animation: orbitFadeUp 0.8s 0.55s both cubic-bezier(.2,.7,.2,1); }
+.orbit-anim-5 { animation: orbitFadeUp 0.8s 0.7s both cubic-bezier(.2,.7,.2,1); }
+
+.orbit-card {
+  background: rgba(255,255,255,0.55);
+  border: 0.5px solid var(--line);
+  border-radius: 20px;
+  padding: 22px;
+  transition: all 0.5s cubic-bezier(.2,.7,.2,1);
+}
+.orbit-card:hover {
+  background: rgba(255,255,255,0.85);
+  transform: translateY(-3px);
+  border-color: rgba(44,42,36,0.25);
+}
+
+.orbit-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0.5px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.5);
+  margin-bottom: 14px;
+  transition: all 0.4s;
+}
+.orbit-card:hover .orbit-icon { background: var(--ink); border-color: var(--ink); }
+.orbit-card:hover .orbit-icon svg { stroke: var(--cream); }
+
+.orbit-orbit-ring {
+  position: absolute;
+  border: 0.5px solid var(--line);
+  border-radius: 50%;
+}
+.orbit-planet { animation: orbitSpin 24s linear infinite; transform-origin: center; }
+.orbit-planet-2 { animation: orbitSpin 36s linear infinite reverse; transform-origin: center; }
+
+.orbit-h1 {
+  font-size: 56px;
+  line-height: 1.02;
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.orbit-h1 em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+
+.orbit-section-label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.orbit-price-card {
+  background: rgba(255,255,255,0.55);
+  border: 0.5px solid var(--line);
+  border-radius: 20px;
+  padding: 24px;
+  transition: all 0.5s;
+  position: relative;
+}
+.orbit-price-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.9);
+}
+.orbit-price-card.featured {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+.orbit-price-card.featured .orbit-btn {
+  background: var(--cream);
+  color: var(--ink);
+  border-color: var(--cream);
+}
+.orbit-price-card.featured .orbit-btn:hover {
+  background: transparent;
+  color: var(--cream);
+  border-color: var(--cream);
+}
+
+.orbit-check { width: 14px; height: 14px; flex-shrink: 0; }
+
+.orbit-marquee { overflow: hidden; position: relative; }
+.orbit-marquee-track {
+  display: flex;
+  gap: 48px;
+  animation: orbitMarquee 30s linear infinite;
+  white-space: nowrap;
+}
+@keyframes orbitMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.orbit-testimonial {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.orbit-stat-num {
+  font-size: 44px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.hero-em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: #D4B896;
+  letter-spacing: -0.01em;
+}
+
+.cta-em {
+  font-family: var(--font-serif);
+  color: var(--accent);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 768px) {
+  .orbit-h1 { font-size: 40px; }
+  nav { padding: 18px 20px !important; }
+  section { padding-left: 20px !important; padding-right: 20px !important; }
+  .orbit-nav { display: none !important; }
+  .grid-3 { grid-template-columns: 1fr !important; }
+  .grid-2 { grid-template-columns: 1fr !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="orbit-wrap">
+
+<!-- NAV -->
+<nav class="orbit-anim-1" style="display: flex; align-items: center; justify-content: space-between; padding: 22px 40px; border-bottom: 0.5px solid var(--line);">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="11" r="3.5" stroke="#2C2A24" stroke-width="0.8"/>
+      <ellipse cx="11" cy="11" rx="10" ry="4" stroke="#2C2A24" stroke-width="0.8" transform="rotate(-25 11 11)"/>
+    </svg>
+    <span style="font-size: 17px; font-weight: 400; letter-spacing: 0.12em;">ORBITT</span>
+  </div>
+  <div class="orbit-nav" style="display: flex; gap: 32px;">
+    <a href="#">Product</a>
+    <a href="#">For business</a>
+    <a href="#">Pricing</a>
+    <a href="#">About</a>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a href="#" class="orbit-btn">Sign in</a>
+    <a href="#" class="orbit-btn orbit-btn-solid">Start free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="padding: 80px 40px 60px; position: relative; overflow: hidden;">
+  <div style="position: absolute; top: 40px; right: -80px; width: 420px; height: 420px; pointer-events: none;">
+    <div class="orbit-orbit-ring orbit-planet" style="inset: 0;"></div>
+    <div class="orbit-orbit-ring orbit-planet-2" style="inset: 50px;"></div>
+    <div class="orbit-orbit-ring" style="inset: 100px;"></div>
+    <svg width="420" height="420" viewBox="0 0 420 420" style="position: absolute; inset: 0;">
+      <circle cx="210" cy="210" r="6" fill="#8B7355"/>
+      <circle cx="210" cy="10" r="3" fill="#2C2A24" style="animation: orbitSpin 18s linear infinite; transform-origin: 210px 210px;"/>
+      <circle cx="360" cy="210" r="2.5" fill="#7FA670" style="animation: orbitSpin 28s linear infinite reverse; transform-origin: 210px 210px;"/>
+    </svg>
+  </div>
+
+  <div class="orbit-anim-2" style="position: relative; max-width: 560px;">
+    <div class="orbit-pill" style="margin-bottom: 28px;"><span class="orbit-dot"></span> Now in private beta</div>
+    <h1 class="orbit-h1">Practice the <em>conversations</em> that shape your career.</h1>
+    <p style="font-size: 17px; line-height: 1.55; font-weight: 300; color: var(--ink-soft); margin: 24px 0 32px; max-width: 460px;">ORBITT is an AI-powered cultural simulator. Rehearse interviews, meetings, and workplace moments — then get feedback that actually moves the needle.</p>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <a href="#" class="orbit-btn orbit-btn-solid" style="padding: 13px 22px;">Try a simulation &nbsp;→</a>
+      <a href="#" class="orbit-btn" style="padding: 13px 22px;">Watch demo</a>
+    </div>
+    <div style="margin-top: 48px; display: flex; gap: 40px; flex-wrap: wrap;">
+      <div><div class="orbit-stat-num">12k+</div><div style="font-size: 12px; color: var(--ink-soft); margin-top: 6px;">Simulations run</div></div>
+      <div><div class="orbit-stat-num">94<span style="font-size: 22px;">%</span></div><div style="font-size: 12px; color: var(--ink-soft); margin-top: 6px;">Felt more confident</div></div>
+      <div><div class="orbit-stat-num">40+</div><div style="font-size: 12px; color: var(--ink-soft); margin-top: 6px;">Cultural contexts</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGO MARQUEE -->
+<section class="orbit-anim-3" style="border-top: 0.5px solid var(--line); border-bottom: 0.5px solid var(--line); padding: 22px 0; background: rgba(255,255,255,0.25);">
+  <div class="orbit-marquee">
+    <div class="orbit-marquee-track" style="font-size: 14px; font-weight: 300; color: var(--ink-soft); letter-spacing: 0.1em;">
+      <span>UC&nbsp;BERKELEY</span><span>·</span><span>STANFORD&nbsp;CAREER&nbsp;CENTER</span><span>·</span><span>NORTHEASTERN</span><span>·</span><span>COLUMBIA&nbsp;BUSINESS</span><span>·</span><span>GEORGIA&nbsp;TECH</span><span>·</span><span>UPENN</span><span>·</span>
+      <span>UC&nbsp;BERKELEY</span><span>·</span><span>STANFORD&nbsp;CAREER&nbsp;CENTER</span><span>·</span><span>NORTHEASTERN</span><span>·</span><span>COLUMBIA&nbsp;BUSINESS</span><span>·</span><span>GEORGIA&nbsp;TECH</span><span>·</span><span>UPENN</span><span>·</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="padding: 80px 40px 60px;">
+  <div class="orbit-anim-4" style="display: flex; justify-content: space-between; align-items: end; margin-bottom: 40px; gap: 40px; flex-wrap: wrap;">
+    <div>
+      <div class="orbit-section-label">— Features</div>
+      <h2 style="font-size: 38px; font-weight: 300; letter-spacing: -0.03em; margin: 12px 0 0; max-width: 500px; line-height: 1.1;">Everything you need to feel at home in a new room.</h2>
+    </div>
+    <a href="#" class="orbit-btn">All features &nbsp;→</a>
+  </div>
+
+  <div class="orbit-anim-5 grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+    <div class="orbit-card">
+      <div class="orbit-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2C2A24" stroke-width="0.9" stroke-linecap="round">
+          <circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/>
+        </svg>
+      </div>
+      <h3 style="font-size: 16px; font-weight: 500; margin: 0 0 8px;">AI cultural simulation</h3>
+      <p style="font-size: 13px; line-height: 1.55; color: var(--ink-soft); font-weight: 300; margin: 0;">Run live interview and meeting scenarios with a model that responds to tone, pacing, and context.</p>
+    </div>
+    <div class="orbit-card">
+      <div class="orbit-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2C2A24" stroke-width="0.9" stroke-linecap="round">
+          <path d="M2 3h12v8H9l-3 3v-3H2z"/><path d="M5 6h6M5 8h4"/>
+        </svg>
+      </div>
+      <h3 style="font-size: 16px; font-weight: 500; margin: 0 0 8px;">Real-time feedback</h3>
+      <p style="font-size: 13px; line-height: 1.55; color: var(--ink-soft); font-weight: 300; margin: 0;">Hear what worked and what to adjust — from word choice to body language cues — the moment you finish.</p>
+    </div>
+    <div class="orbit-card">
+      <div class="orbit-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2C2A24" stroke-width="0.9" stroke-linecap="round">
+          <rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 6h6M5 8.5h6M5 11h3"/>
+        </svg>
+      </div>
+      <h3 style="font-size: 16px; font-weight: 500; margin: 0 0 8px;">Research-backed courses</h3>
+      <p style="font-size: 13px; line-height: 1.55; color: var(--ink-soft); font-weight: 300; margin: 0;">Short, interactive lessons designed with communication experts. Built to apply, not just absorb.</p>
+    </div>
+    <div class="orbit-card">
+      <div class="orbit-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2C2A24" stroke-width="0.9" stroke-linecap="round">
+          <circle cx="5.5" cy="6" r="2"/><circle cx="10.5" cy="6" r="2"/><path d="M2 13c0-2 1.5-3.5 3.5-3.5S9 11 9 13M7 13c0-2 1.5-3.5 3.5-3.5S14 11 14 13"/>
+        </svg>
+      </div>
+      <h3 style="font-size: 16px; font-weight: 500; margin: 0 0 8px;">Custom for teams</h3>
+      <p style="font-size: 13px; line-height: 1.55; color: var(--ink-soft); font-weight: 300; margin: 0;">Companies configure scenarios for their own onboarding flow — legal, retail, engineering, and more.</p>
+    </div>
+    <div class="orbit-card">
+      <div class="orbit-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2C2A24" stroke-width="0.9" stroke-linecap="round">
+          <path d="M8 1l2 4.5 5 .6-3.6 3.4.9 5L8 12l-4.3 2.5.9-5L1 6.1l5-.6z"/>
+        </svg>
+      </div>
+      <h3 style="font-size: 16px; font-weight: 500; margin: 0 0 8px;">Progress tracking</h3>
+      <p style="font-size: 13px; line-height: 1.55; color: var(--ink-soft); font-weight: 300; margin: 0;">Watch your confidence, clarity, and fluency metrics climb across weeks, not guesswork.</p>
+    </div>
+    <div class="orbit-card">
+      <div class="orbit-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2C2A24" stroke-width="0.9" stroke-linecap="round">
+          <circle cx="8" cy="8" r="6.5"/><path d="M1.5 8h13M8 1.5c2 2 2 11 0 13M8 1.5c-2 2-2 11 0 13"/>
+        </svg>
+      </div>
+      <h3 style="font-size: 16px; font-weight: 500; margin: 0 0 8px;">40+ cultural contexts</h3>
+      <p style="font-size: 13px; line-height: 1.55; color: var(--ink-soft); font-weight: 300; margin: 0;">From US startup stand-ups to UK formal interviews, practice the rituals specific to where you're going.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PREVIEW / DEMO MOCK -->
+<section style="padding: 40px;">
+  <div class="grid-2" style="background: #2C2A24; border-radius: 24px; padding: 40px; color: var(--cream); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+    <div>
+      <div style="font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(245,240,230,0.5); margin-bottom: 14px;">— Live simulation</div>
+      <h2 style="font-size: 34px; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 18px;">A rehearsal room that <em class="hero-em">talks back.</em></h2>
+      <p style="font-size: 14px; line-height: 1.6; color: rgba(245,240,230,0.7); font-weight: 300; margin: 0 0 24px;">Choose a scenario, step in, and speak freely. ORBITT reads your answers, adapts, and coaches you through the moments that matter most.</p>
+      <a href="#" class="orbit-btn" style="background: var(--cream); color: var(--ink); border-color: var(--cream);">Start a simulation &nbsp;→</a>
+    </div>
+    <div style="background: rgba(245,240,230,0.06); border: 0.5px solid rgba(245,240,230,0.15); border-radius: 16px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: rgba(245,240,230,0.5); margin-bottom: 16px;">
+        <span style="display: flex; align-items: center; gap: 6px;"><span class="orbit-dot" style="background: #D4B896;"></span> SESSION · 02:14</span>
+        <span>SW engineer · behavioral round</span>
+      </div>
+      <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: #D4B896; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #2C2A24; font-weight: 500;">AI</div>
+        <div style="background: rgba(245,240,230,0.08); padding: 10px 14px; border-radius: 14px 14px 14px 4px; font-size: 13px; line-height: 1.5; color: rgba(245,240,230,0.85);">Tell me about a time you disagreed with a teammate. How did you handle it?</div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-direction: row-reverse;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(245,240,230,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px;">You</div>
+        <div style="background: rgba(127,166,112,0.18); padding: 10px 14px; border-radius: 14px 14px 4px 14px; font-size: 13px; line-height: 1.5; color: rgba(245,240,230,0.9);">On our last project, my teammate wanted to refactor before shipping. I suggested we...</div>
+      </div>
+      <div style="border-top: 0.5px solid rgba(245,240,230,0.15); padding-top: 12px; display: flex; gap: 14px; font-size: 11px; color: rgba(245,240,230,0.6); flex-wrap: wrap;">
+        <span>Clarity <strong style="color: #7FA670; font-weight: 500;">· 8.6</strong></span>
+        <span>Structure <strong style="color: #D4B896; font-weight: 500;">· 7.2</strong></span>
+        <span>Specificity <strong style="color: #E8A87C; font-weight: 500;">· 6.4</strong></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section style="padding: 70px 40px; text-align: center;">
+  <div style="max-width: 560px; margin: 0 auto;">
+    <div class="orbit-section-label" style="margin-bottom: 24px;">— From our users</div>
+    <p class="orbit-testimonial" style="margin: 0 0 28px;">"I'd read every interview prep guide out there. None of it stuck until I actually had to answer the questions. ORBITT made that possible — for free."</p>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 12px; font-weight: 500;">PR</div>
+      <div style="text-align: left;">
+        <div style="font-size: 13px; font-weight: 500;">Priya R.</div>
+        <div style="font-size: 12px; color: var(--ink-soft);">First-year, UC Berkeley</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section style="padding: 60px 40px 80px; border-top: 0.5px solid var(--line);">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <div class="orbit-section-label">— Pricing</div>
+    <h2 style="font-size: 38px; font-weight: 300; letter-spacing: -0.03em; margin: 12px 0 0;">Start free. Grow when you're ready.</h2>
+  </div>
+  <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+    <div class="orbit-price-card">
+      <div style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px;">Free</div>
+      <div style="font-size: 40px; font-weight: 300; letter-spacing: -0.03em; line-height: 1;">$0</div>
+      <div style="font-size: 12px; color: var(--ink-soft); margin-top: 4px; margin-bottom: 20px;">forever, for students</div>
+      <a href="#" class="orbit-btn" style="width: 100%; justify-content: center;">Get started</a>
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; font-weight: 300;">
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>5 simulations / month</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Core course library</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Basic feedback reports</div>
+      </div>
+    </div>
+    <div class="orbit-price-card featured">
+      <div style="position: absolute; top: 16px; right: 16px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; background: #D4B896; color: #2C2A24; padding: 4px 10px; border-radius: 999px;">Popular</div>
+      <div style="font-size: 13px; opacity: 0.6; margin-bottom: 8px;">Pro</div>
+      <div style="font-size: 40px; font-weight: 300; letter-spacing: -0.03em; line-height: 1;">$8<span style="font-size: 16px; opacity: 0.5;">/mo</span></div>
+      <div style="font-size: 12px; opacity: 0.6; margin-top: 4px; margin-bottom: 20px;">billed annually at $50</div>
+      <a href="#" class="orbit-btn" style="width: 100%; justify-content: center;">Start 14-day trial &nbsp;→</a>
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; font-weight: 300;">
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#F5F0E6" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Unlimited simulations</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#F5F0E6" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Advanced feedback & trends</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#F5F0E6" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>40+ cultural contexts</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#F5F0E6" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Resume & cover letter review</div>
+      </div>
+    </div>
+    <div class="orbit-price-card">
+      <div style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px;">Enterprise</div>
+      <div style="font-size: 40px; font-weight: 300; letter-spacing: -0.03em; line-height: 1;">Custom</div>
+      <div style="font-size: 12px; color: var(--ink-soft); margin-top: 4px; margin-bottom: 20px;">from $100 / employee / yr</div>
+      <a href="#" class="orbit-btn" style="width: 100%; justify-content: center;">Talk to sales</a>
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; font-weight: 300;">
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Everything in Pro</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Custom onboarding flows</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Admin dashboard & SSO</div>
+        <div style="display: flex; gap: 8px; align-items: center;"><svg class="orbit-check" viewBox="0 0 14 14" fill="none" stroke="#2C2A24" stroke-width="1"><path d="M3 7l3 3 5-6"/></svg>Dedicated success manager</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding: 60px 40px 40px; text-align: center; border-top: 0.5px solid var(--line);">
+  <h2 style="font-size: 44px; font-weight: 300; letter-spacing: -0.035em; margin: 0 0 14px; line-height: 1.05;">Step into the <em class="cta-em">room</em> before it's real.</h2>
+  <p style="font-size: 15px; color: var(--ink-soft); font-weight: 300; margin: 0 0 24px;">Your first five simulations are on us.</p>
+  <a href="#" class="orbit-btn orbit-btn-solid" style="padding: 14px 28px;">Create free account &nbsp;→</a>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding: 30px 40px; border-top: 0.5px solid var(--line); display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-soft); font-weight: 300; flex-wrap: wrap; gap: 12px;">
+  <div>© 2026 ORBITT Teams, Inc.</div>
+  <div style="display: flex; gap: 24px;">
+    <a href="#" style="color: inherit; text-decoration: none;">Privacy</a>
+    <a href="#" style="color: inherit; text-decoration: none;">Terms</a>
+    <a href="#" style="color: inherit; text-decoration: none;">Contact</a>
+  </div>
+</footer>
+
+</div>
+
+</body>
+</html>
