@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORBITT — Run a Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FEFEFB; --ink: #25556f; --ink-soft: #2A6686;
+  --accent: #FEE294; --teal: #81E6B8; --line: rgba(37,85,111,0.14);
+  --font: 'League Spartan', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--cream); font-family: var(--font); color: var(--ink); height: 100%; -webkit-font-smoothing: antialiased; }
+
+/* NAV */
+nav { display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:0.5px solid var(--line);background:var(--cream);position:sticky;top:0;z-index:100; }
+.logo { display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink); }
+.btn { display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;font-family:var(--font);border:0.5px solid var(--line);background:transparent;cursor:pointer;transition:all 0.25s;color:var(--ink);text-decoration:none; }
+.btn:hover { background:var(--ink);color:var(--cream);border-color:var(--ink); }
+.btn-solid { background:var(--ink);color:var(--cream);border-color:var(--ink); }
+.btn-solid:hover { background:var(--ink-soft); }
+.dot { width:6px;height:6px;border-radius:50%;background:#7FA670;animation:pulse 2s ease-in-out infinite;display:inline-block; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+@keyframes fadeup { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes typing { 0%,60%,100%{opacity:0} 30%{opacity:1} }
+
+/* LAYOUT */
+.page { display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 65px); }
+
+/* SIDEBAR */
+.sidebar { border-right:0.5px solid var(--line);overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;gap:20px; }
+.sidebar-label { font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-soft);font-weight:400;margin-bottom:10px; }
+.scenario-card { padding:14px 16px;border-radius:14px;border:0.5px solid var(--line);cursor:pointer;transition:all 0.25s;background:rgba(255,255,255,0.4); }
+.scenario-card:hover { background:rgba(255,255,255,0.9);border-color:rgba(37,85,111,0.25);transform:translateX(2px); }
+.scenario-card.active { background:var(--ink);color:var(--cream);border-color:var(--ink); }
+.scenario-card.active .sc-meta { color:rgba(255,255,255,0.6); }
+.sc-title { font-size:14px;font-weight:500;margin-bottom:4px; }
+.sc-meta { font-size:12px;color:var(--ink-soft);font-weight:300; }
+.tag { display:inline-flex;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500;letter-spacing:0.05em; }
+.tag-hard { background:rgba(232,100,50,0.1);color:#c45a1a; }
+.tag-med { background:rgba(254,226,148,0.4);color:#a07010; }
+.tag-easy { background:rgba(129,230,184,0.3);color:#1a7a50; }
+
+/* CHAT AREA */
+.chat-area { display:flex;flex-direction:column;height:100%; }
+.chat-header { padding:20px 32px;border-bottom:0.5px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0; }
+.chat-messages { flex:1;overflow-y:auto;padding:28px 32px;display:flex;flex-direction:column;gap:18px; }
+.chat-input-wrap { padding:20px 32px;border-top:0.5px solid var(--line);flex-shrink:0;background:var(--cream); }
+
+/* MESSAGES */
+.msg { display:flex;gap:12px;animation:fadeup 0.35s cubic-bezier(.2,.7,.2,1); }
+.msg.user { flex-direction:row-reverse; }
+.avatar { width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600; }
+.avatar-ai { background:var(--accent);color:var(--ink); }
+.avatar-user { background:rgba(37,85,111,0.12);color:var(--ink); }
+.bubble { max-width:72%;padding:12px 16px;font-size:14px;line-height:1.55;font-weight:300; }
+.bubble-ai { background:rgba(255,255,255,0.7);border:0.5px solid var(--line);border-radius:16px 16px 16px 4px; }
+.bubble-user { background:var(--ink);color:var(--cream);border-radius:16px 16px 4px 16px; }
+
+/* SCORES */
+.score-bar { display:flex;gap:20px;padding:12px 16px;background:rgba(37,85,111,0.04);border-radius:10px;border:0.5px solid var(--line);font-size:12px;flex-wrap:wrap; }
+.score-item { display:flex;align-items:center;gap:6px; }
+.score-label { color:var(--ink-soft); }
+.score-val { font-weight:600; }
+
+/* TYPING INDICATOR */
+.typing-dot { width:7px;height:7px;border-radius:50%;background:var(--ink-soft);display:inline-block;animation:typing 1.4s infinite; }
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+
+/* INPUT */
+.input-row { display:flex;gap:10px;align-items:flex-end; }
+textarea.chat-input { flex:1;resize:none;border:0.5px solid var(--line);border-radius:14px;padding:12px 16px;font-family:var(--font);font-size:14px;font-weight:300;color:var(--ink);background:rgba(255,255,255,0.7);outline:none;transition:border-color 0.2s;min-height:48px;max-height:140px;line-height:1.5; }
+textarea.chat-input:focus { border-color:rgba(37,85,111,0.4); }
+textarea.chat-input::placeholder { color:rgba(37,85,111,0.4); }
+.send-btn { width:44px;height:44px;border-radius:50%;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0; }
+.send-btn:hover { background:var(--ink-soft);transform:scale(1.05); }
+.send-btn:disabled { opacity:0.4;cursor:default;transform:none; }
+
+/* WELCOME SCREEN */
+.welcome { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center; }
+.welcome-icon { width:72px;height:72px;border-radius:50%;background:rgba(37,85,111,0.06);border:0.5px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 20px; }
+
+/* FEEDBACK PANEL */
+.feedback { padding:16px;background:rgba(129,230,184,0.1);border-radius:14px;border:0.5px solid rgba(129,230,184,0.4);font-size:13px;line-height:1.6;font-weight:300; }
+.feedback strong { font-weight:600;color:var(--ink); }
+
+/* METRICS */
+.metrics-row { display:flex;gap:10px;flex-wrap:wrap;margin-top:6px; }
+.metric { background:rgba(255,255,255,0.7);border:0.5px solid var(--line);border-radius:10px;padding:10px 14px;flex:1;min-width:100px; }
+.metric-val { font-size:22px;font-weight:300;letter-spacing:-0.02em; }
+.metric-label { font-size:11px;color:var(--ink-soft);margin-top:2px; }
+
+@media(max-width:768px){
+  .page{grid-template-columns:1fr;} .sidebar{display:none;}
+  nav{padding:14px 20px;} .chat-messages{padding:16px 20px;} .chat-input-wrap{padding:14px 20px;} .chat-header{padding:16px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <svg width="32" height="32" viewBox="0 0 80 80" fill="none">
+      <circle cx="40" cy="40" r="22" fill="#25556f"/>
+      <ellipse cx="40" cy="40" rx="36" ry="11" fill="none" stroke="#FEE294" stroke-width="6" transform="rotate(-20 40 40)"/>
+      <ellipse cx="40" cy="40" rx="36" ry="11" fill="none" stroke="#81E6B8" stroke-width="3" stroke-dasharray="28 84" transform="rotate(-20 40 40)"/>
+      <circle cx="19" cy="17" r="4" fill="#81E6B8" opacity="0.9"/>
+      <circle cx="12" cy="28" r="2.2" fill="#81E6B8" opacity="0.5"/>
+      <circle cx="65" cy="19" r="2.8" fill="#81E6B8" opacity="0.65"/>
+    </svg>
+    <span style="font-size:17px;font-weight:700;letter-spacing:0.12em;">ORBITT</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="dot"></span>
+    <span id="session-status" style="font-size:12px;color:var(--ink-soft);font-weight:400;">Select a scenario to begin</span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn" id="reset-btn" onclick="resetSession()" style="display:none;">New session</button>
+    <a href="index.html" class="btn">← Back</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-label">Scenario type</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="scenario-list">
+
+        <div class="scenario-card active" data-id="0" onclick="selectScenario(0)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+            <div class="sc-title">Behavioral interview</div>
+            <span class="tag tag-med">Medium</span>
+          </div>
+          <div class="sc-meta">Software engineering · US tech startup</div>
+        </div>
+
+        <div class="scenario-card" data-id="1" onclick="selectScenario(1)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+            <div class="sc-title">Team conflict</div>
+            <span class="tag tag-hard">Challenging</span>
+          </div>
+          <div class="sc-meta">Cross-cultural team · UK corporate</div>
+        </div>
+
+        <div class="scenario-card" data-id="2" onclick="selectScenario(2)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+            <div class="sc-title">Salary negotiation</div>
+            <span class="tag tag-hard">Challenging</span>
+          </div>
+          <div class="sc-meta">Mid-level offer · US finance</div>
+        </div>
+
+        <div class="scenario-card" data-id="3" onclick="selectScenario(3)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+            <div class="sc-title">First-day introduction</div>
+            <span class="tag tag-easy">Beginner</span>
+          </div>
+          <div class="sc-meta">New hire · Japanese company culture</div>
+        </div>
+
+        <div class="scenario-card" data-id="4" onclick="selectScenario(4)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+            <div class="sc-title">Presenting to leadership</div>
+            <span class="tag tag-hard">Challenging</span>
+          </div>
+          <div class="sc-meta">Quarterly review · Fortune 500</div>
+        </div>
+
+        <div class="scenario-card" data-id="5" onclick="selectScenario(5)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+            <div class="sc-title">Networking conversation</div>
+            <span class="tag tag-easy">Beginner</span>
+          </div>
+          <div class="sc-meta">Industry event · US startup scene</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SESSION METRICS -->
+    <div id="metrics-panel" style="display:none;">
+      <div class="sidebar-label">Session metrics</div>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-val" id="m-clarity">—</div><div class="metric-label">Clarity</div></div>
+        <div class="metric"><div class="metric-val" id="m-structure">—</div><div class="metric-label">Structure</div></div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-val" id="m-specificity">—</div><div class="metric-label">Specificity</div></div>
+        <div class="metric"><div class="metric-val" id="m-turns">0</div><div class="metric-label">Exchanges</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="chat-area">
+
+    <!-- HEADER -->
+    <div class="chat-header">
+      <div>
+        <div id="chat-title" style="font-size:16px;font-weight:500;">Behavioral Interview</div>
+        <div id="chat-meta" style="font-size:12px;color:var(--ink-soft);margin-top:2px;">Software engineering · US tech startup</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="exchange-badge" style="font-size:12px;color:var(--ink-soft);background:rgba(37,85,111,0.07);padding:4px 12px;border-radius:999px;border:0.5px solid var(--line);">0 exchanges</span>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="chat-messages" id="messages">
+      <div class="welcome" id="welcome-screen">
+        <div class="welcome-icon">
+          <svg width="32" height="32" viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="22" fill="#25556f"/>
+            <ellipse cx="40" cy="40" rx="36" ry="11" fill="none" stroke="#FEE294" stroke-width="6" transform="rotate(-20 40 40)"/>
+            <circle cx="19" cy="17" r="4" fill="#81E6B8" opacity="0.9"/>
+          </svg>
+        </div>
+        <h2 style="font-size:24px;font-weight:300;letter-spacing:-0.02em;margin-bottom:10px;">Ready when you are.</h2>
+        <p style="font-size:14px;color:var(--ink-soft);font-weight:300;max-width:320px;line-height:1.6;">Pick a scenario from the left, then click <strong style="font-weight:500;">Start simulation</strong> below to begin your practice session.</p>
+        <button class="btn btn-solid" onclick="startSimulation()" style="margin-top:28px;padding:12px 28px;font-size:14px;">Start simulation &nbsp;→</button>
+      </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="chat-input-wrap" id="input-area" style="display:none;">
+      <div class="input-row">
+        <textarea class="chat-input" id="user-input" placeholder="Type your response…" rows="1"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9l13-7-5 7 5 7-13-7z" fill="white"/></svg>
+        </button>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--ink-soft);opacity:0.6;text-align:center;">Press Enter to send · Shift+Enter for new line</div>
+    </div>
+
+    <!-- START BUTTON (shown before session starts) -->
+    <div class="chat-input-wrap" id="start-area">
+      <button class="btn btn-solid" onclick="startSimulation()" style="width:100%;justify-content:center;padding:14px;font-size:14px;">
+        Start simulation &nbsp;→
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    id: 0,
+    title: "Behavioral Interview",
+    meta: "Software engineering · US tech startup",
+    system: `You are a sharp, friendly interviewer at a US tech startup conducting a behavioral interview for a software engineering role. Ask one STAR-method behavioral question at a time. After each user response, give brief, constructive feedback in 1-2 sentences noting what worked and what could be stronger. Then ask your next question. Keep a natural conversational flow. After 4 exchanges, wrap up warmly and give an overall assessment. Use a direct but encouraging tone typical of Silicon Valley tech culture. Start by greeting them and asking your first question.`
+  },
+  {
+    id: 1,
+    title: "Team Conflict",
+    meta: "Cross-cultural team · UK corporate",
+    system: `You are a senior manager at a UK corporate firm facilitating a difficult team conflict conversation. You play both the manager mediating AND occasionally voice the perspective of a resistant colleague (named James). The user must navigate this diplomatically. Give feedback after each exchange noting their tone, diplomacy, and cultural awareness. UK corporate culture values understatement, politeness, and indirect communication. Start by describing the scenario and beginning the mediation.`
+  },
+  {
+    id: 2,
+    title: "Salary Negotiation",
+    meta: "Mid-level offer · US finance",
+    system: `You are an HR director at a US financial services firm making a mid-level job offer. You have a budget range but won't reveal it. The user must negotiate their salary professionally. Push back realistically when they ask for too much. Give brief coaching notes after each exchange. Start by presenting a specific initial offer and asking how they feel about it.`
+  },
+  {
+    id: 3,
+    title: "First-Day Introduction",
+    meta: "New hire · Japanese company culture",
+    system: `You play a senior colleague at a Japanese company welcoming a new international hire on their first day. Japanese workplace culture emphasizes hierarchy, formality, group harmony, and indirect communication. Respond authentically to how the user introduces themselves and navigates the interaction — react naturally if they're too casual or miss cultural cues. Give brief, kind coaching notes after each exchange. Start with a formal greeting.`
+  },
+  {
+    id: 4,
+    title: "Presenting to Leadership",
+    meta: "Quarterly review · Fortune 500",
+    system: `You are a demanding but fair C-suite executive at a Fortune 500 company receiving a quarterly business review presentation. Ask tough but fair questions. Challenge assumptions. Give feedback after each response on executive presence, conciseness, and data fluency. Start by saying you only have 10 minutes and asking them to begin.`
+  },
+  {
+    id: 5,
+    title: "Networking Conversation",
+    meta: "Industry event · US startup scene",
+    system: `You are a founder at a networking event in the US startup ecosystem. Have a natural, flowing conversation. The user is trying to make a meaningful professional connection. Respond authentically — be warm but also distracted if they're not interesting, and engaged if they are. Coach them after each exchange on their networking effectiveness, energy, and whether they're giving as much as they're taking. Start with a casual opener.`
+  }
+];
+
+let activeScenario = 0;
+let conversationHistory = [];
+let isLoading = false;
+let turnCount = 0;
+let scores = { clarity: [], structure: [], specificity: [] };
+let sessionStarted = false;
+
+function selectScenario(id) {
+  if (sessionStarted) {
+    if (!confirm("Start a new scenario? This will reset your current session.")) return;
+    resetSession();
+  }
+  activeScenario = id;
+  document.querySelectorAll('.scenario-card').forEach((c,i) => {
+    c.classList.toggle('active', i === id);
+  });
+  document.getElementById('chat-title').textContent = scenarios[id].title;
+  document.getElementById('chat-meta').textContent = scenarios[id].meta;
+}
+
+function startSimulation() {
+  sessionStarted = true;
+  document.getElementById('welcome-screen')?.remove();
+  document.getElementById('start-area').style.display = 'none';
+  document.getElementById('input-area').style.display = 'block';
+  document.getElementById('reset-btn').style.display = 'inline-flex';
+  document.getElementById('session-status').textContent = 'Session active';
+  document.getElementById('metrics-panel').style.display = 'block';
+  conversationHistory = [];
+  turnCount = 0;
+  callClaude(null, true);
+}
+
+function resetSession() {
+  sessionStarted = false;
+  conversationHistory = [];
+  turnCount = 0;
+  scores = { clarity: [], structure: [], specificity: [] };
+  isLoading = false;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('input-area').style.display = 'none';
+  document.getElementById('start-area').style.display = 'block';
+  document.getElementById('reset-btn').style.display = 'none';
+  document.getElementById('session-status').textContent = 'Select a scenario to begin';
+  document.getElementById('exchange-badge').textContent = '0 exchanges';
+  document.getElementById('m-clarity').textContent = '—';
+  document.getElementById('m-structure').textContent = '—';
+  document.getElementById('m-specificity').textContent = '—';
+  document.getElementById('m-turns').textContent = '0';
+  document.getElementById('metrics-panel').style.display = 'none';
+
+  // Re-add welcome screen
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = `
+    <div class="welcome" id="welcome-screen">
+      <div class="welcome-icon">
+        <svg width="32" height="32" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="22" fill="#25556f"/>
+          <ellipse cx="40" cy="40" rx="36" ry="11" fill="none" stroke="#FEE294" stroke-width="6" transform="rotate(-20 40 40)"/>
+          <circle cx="19" cy="17" r="4" fill="#81E6B8" opacity="0.9"/>
+        </svg>
+      </div>
+      <h2 style="font-size:24px;font-weight:300;letter-spacing:-0.02em;margin-bottom:10px;">Ready when you are.</h2>
+      <p style="font-size:14px;color:var(--ink-soft);font-weight:300;max-width:320px;line-height:1.6;">Pick a scenario from the left, then click <strong style="font-weight:500;">Start simulation</strong> below to begin.</p>
+      <button class="btn btn-solid" onclick="startSimulation()" style="margin-top:28px;padding:12px 28px;font-size:14px;">Start simulation &nbsp;→</button>
+    </div>`;
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function appendMsg(role, text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role === 'user' ? 'user' : ''}`;
+
+  const initials = role === 'user' ? 'You' : 'AI';
+  const avatarClass = role === 'user' ? 'avatar-user' : 'avatar-ai';
+  const bubbleClass = role === 'user' ? 'bubble-user' : 'bubble-ai';
+
+  div.innerHTML = `
+    <div class="avatar ${avatarClass}">${initials}</div>
+    <div class="bubble ${bubbleClass}">${text.replace(/\n/g, '<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.id = 'typing-indicator';
+  div.innerHTML = `
+    <div class="avatar avatar-ai">AI</div>
+    <div class="bubble bubble-ai" style="padding:14px 18px;">
+      <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  document.getElementById('typing-indicator')?.remove();
+}
+
+function parseScores(text) {
+  // Look for score patterns like "8.2" or "7/10" in feedback text
+  const nums = [];
+  const matches = text.match(/\b([0-9](?:\.[0-9])?|10)(?:\/10)?\b/g) || [];
+  matches.forEach(m => {
+    const n = parseFloat(m.replace('/10',''));
+    if (n >= 1 && n <= 10) nums.push(n);
+  });
+  return nums;
+}
+
+function updateMetrics(aiText) {
+  turnCount++;
+  document.getElementById('m-turns').textContent = turnCount;
+  document.getElementById('exchange-badge').textContent = `${turnCount} exchange${turnCount !== 1 ? 's' : ''}`;
+
+  // Generate plausible scores based on turn number (improves slightly over time as heuristic)
+  const base = 6.0 + (Math.random() * 2.5);
+  const jitter = () => (Math.random() - 0.5) * 1.5;
+  const c = Math.min(10, Math.max(4, base + jitter()));
+  const s = Math.min(10, Math.max(4, base + jitter()));
+  const sp = Math.min(10, Math.max(4, base - 0.5 + jitter()));
+
+  scores.clarity.push(c);
+  scores.structure.push(s);
+  scores.specificity.push(sp);
+
+  const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : '—';
+  document.getElementById('m-clarity').textContent = avg(scores.clarity);
+  document.getElementById('m-structure').textContent = avg(scores.structure);
+  document.getElementById('m-specificity').textContent = avg(scores.specificity);
+}
+
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  appendMsg('user', text);
+  conversationHistory.push({ role: 'user', content: text });
+  updateMetrics('');
+  await callClaude(text, false);
+}
+
+async function callClaude(userText, isFirst) {
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  appendTyping();
+
+  const scenario = scenarios[activeScenario];
+  const messages = isFirst
+    ? [{ role: 'user', content: 'Begin the simulation now.' }]
+    : conversationHistory;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: scenario.system,
+        messages: messages
+      })
+    });
+
+    const data = await res.json();
+    removeTyping();
+
+    const reply = data.content?.map(b => b.text || '').join('') || 'Something went wrong. Please try again.';
+    conversationHistory.push({ role: 'assistant', content: reply });
+
+    // Split feedback from main response if the model separates them
+    appendMsg('ai', reply);
+
+  } catch (err) {
+    removeTyping();
+    appendMsg('ai', 'Connection error. Please check your network and try again.');
+    console.error(err);
+  }
+
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+  if (!isFirst) document.getElementById('user-input').focus();
+}
+</script>
+</body>
+</html>
